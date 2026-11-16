@@ -59,7 +59,11 @@ export class UIManager {
     return this.hudContainer.querySelector('#minimap-canvas');
   }
 
-  public showTitleScreen(onStartRun: (cfg: RunStartConfig) => void): void {
+  public showTitleScreen(
+    onStartRun: (cfg: RunStartConfig) => void,
+    savedSummary?: string | null,
+    onContinueRun?: () => void
+  ): void {
     this.modalContainer.classList.remove('hidden');
     const diffOptions = worldConfig.difficulties
       .map(d => `<option value="${d.level}" ${d.level === 1 ? 'selected' : ''}>${d.name}</option>`)
@@ -104,7 +108,12 @@ export class UIManager {
           Play as <b style="color:#07acdc;">Darwin</b>, a squishy blue blob! Eat berries, mushrooms &amp; prey to evolve crab parts, outrank predators with <b style="color:#ffbe0b;">Apex Score</b>, and defeat bosses at <b style="color:#f43f5e;">4:00, 8:00, 12:00 &amp; 16:00</b>.<br/>
           <span style="color:#94a3b8;">Controls: WASD Move &bull; Mouse Aim &bull; LMB/RMB Attack (T = Auto-Attack) &bull; SPACE Dash &bull; E Burrow/POI</span>
         </div>
-        <div style="display:flex; justify-content:center;">
+        <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap;">
+          ${
+            savedSummary && onContinueRun
+              ? `<button class="btn" id="btn-continue-run" style="background:#06d6a0; color:#0b1118; font-size:16px; padding:12px 24px;">CONTINUE (${savedSummary})</button>`
+              : ''
+          }
           <button class="btn" id="btn-start-run" style="font-size:18px; padding:12px 38px;">EVOLVE &amp; SURVIVE!</button>
         </div>
       </div>
@@ -112,6 +121,13 @@ export class UIManager {
 
     const gen2 = this.modalContainer.querySelector('#sel-gen2') as HTMLSelectElement;
     if (gen2 && gen2.options.length > 1) gen2.selectedIndex = 1;
+
+    this.modalContainer.querySelector('#btn-continue-run')?.addEventListener('click', () => {
+      if (onContinueRun) {
+        this.modalContainer.classList.add('hidden');
+        onContinueRun();
+      }
+    });
 
     this.modalContainer.querySelector('#btn-start-run')?.addEventListener('click', () => {
       const difficultyLevel = Number((this.modalContainer.querySelector('#sel-diff') as HTMLSelectElement).value);

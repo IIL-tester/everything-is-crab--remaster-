@@ -56,6 +56,8 @@ export class GameEngine {
   private floatingTexts: FloatingText[] = [];
   private particles: PixelParticle[] = [];
   private lastFrameTime = performance.now();
+  private autoSaveTimer = 0;
+  private readonly saveKey = 'everything_is_crab_save_v1';
 
   constructor(canvas: HTMLCanvasElement, uiRoot: HTMLElement) {
     this.canvas = canvas;
@@ -64,12 +66,28 @@ export class GameEngine {
 
     this.resizeCanvas();
     window.addEventListener('resize', () => this.resizeCanvas());
+    window.addEventListener('beforeunload', () => this.saveRunState());
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') this.saveRunState();
+    });
     this.bindInputs();
 
     this.assets.preloadAll().then(() => {
-      this.ui.showTitleScreen(cfg => this.startNewRun(cfg));
+      this.openTitleWithSave();
     });
     requestAnimationFrame(ts => this.loop(ts));
+  }
+
+  private openTitleWithSave(): void {
+    const summary = this.getSavedRunSummary();
+    this.ui.showTitleScreen(
+      cfg => {
+        this.clearSavedRun();
+        this.startNewRun(cfg);
+      },
+      summary,
+      () => this.resumeSavedRun()
+    );
   }
 
   private resizeCanvas(): void {
@@ -358,6 +376,7 @@ export class GameEngine {
         this.evoSystem.applyDraftOption(chosen, this.player.stats);
         this.player.syncMaxHpAndPlating(true);
         this.isPausedForModal = false;
+        this.saveRunState();
       }
     );
   }
@@ -690,6 +709,13 @@ export class GameEngine {
       ft.life -= dt;
       if (ft.life <= 0) this.floatingTexts.splice(i, 1);
     }
+
+    // 8. Periodic Auto-Save (every 2s)
+    this.autoSaveTimer += dt;
+    if (this.autoSaveTimer >= 2.0) {
+      this.autoSaveTimer = 0;
+      this.saveRunState();
+    }
   }
 
   private updateTemperatureAndSoak(
@@ -875,6 +901,7 @@ export class GameEngine {
 
   private endRun(won: boolean, reason: string): void {
     this.isPausedForModal = true;
+    this.clearSavedRun();
     this.ui.showEndScreen(
       won,
       reason,
@@ -888,13 +915,176 @@ export class GameEngine {
         this.segmentTimeSec = 0;
         this.director.bannedBossGroups.clear();
         this.director.triggeredBossTimestamps.clear();
+        this.player.hp = this.player.stats.MaxHp.value;
+        this.player.plating = this.player.stats.MaxPlating.value;
+        this.isRunning = true;
         this.isPausedForModal = false;
+        this.saveRunState();
         this.spawnFloatingText(`EXTINCTION ${this.endlessLevel} BEGINS!`, this.player.x, this.player.y - 45, '#e11d48');
       },
       () => {
         this.isRunning = false;
-        this.ui.showTitleScreen(cfg => this.startNewRun(cfg));
+        this.openTitleWithSave();
       }
     );
+  }
+
+  private saveRunState(): void {
+    if (!this.isRunning || this.player.hp <= 0) return;
+    try {
+      const data = {
+        runConfig: this.runConfig,
+        segmentTimeSec: this.segmentTimeSec,
+        totalTimeSec: this.totalTimeSec,
+        endlessLevel: this.endlessLevel,
+        secondaryGeneticSpliced: this.secondaryGeneticSpliced,
+        activeWeather: this.activeWeather,
+        weatherTimer: this.weatherTimer,
+        autoAttack: this.autoAttack,
+        player: {
+          x: this.player.x,
+          y: this.player.y,
+          angle: this.player.angle,
+          hp: this.player.hp,
+          plating: this.player.plating,
+          xp: this.player.xp,
+          level: this.player.level,
+          xpToNextLevel: this.player.xpToNextLevel,
+          mutagen: this.player.mutagen,
+          kills: this.player.kills,
+          heatBuildup: this.player.heatBuildup,
+          coldBuildup: this.player.coldBuildup,
+          soakBuildup: this.player.soakBuildup,
+          inBurrow: this.player.inBurrow,
+          speedBuffTimer: this.player.speedBuffTimer,
+          damageBuffTimer: this.player.damageBuffTimer,
+          thermalBuffTimer: this.player.thermalBuffTimer
+        },
+        evo: {
+          ownedEvolutions: Array.from(this.evoSystem.ownedEvolutions.entries()),
+          ownedSpecializations: Array.from(this.evoSystem.ownedSpecializations.entries()).map(([k, v]) => [k, v.id]),
+          bannedEvolutions: Array.from(this.evoSystem.bannedEvolutions.values()),
+          carcinisationLevel: this.evoSystem.carcinisationLevel,
+          activeCarcinisationEffects: this.evoSystem.activeCarcinisationEffects,
+          freeRerolls: this.evoSystem.freeRerolls,
+          remainingBans: this.evoSystem.remainingBans,
+          numTimesEvolved: this.evoSystem.numTimesEvolved
+        },
+        director: {
+          triggeredBossTimestamps: Array.from(this.director.triggeredBossTimestamps.values()),
+          bannedBossGroups: Array.from(this.director.bannedBossGroups.values())
+        },
+        usedPoiIds: this.map.pois.filter(p => p.used).map(p => p.id)
+      };
+      localStorage.setItem(this.saveKey, JSON.stringify(data));
+    } catch {
+      // Ignore storage quota or sandboxed iframe errors
+    }
+  }
+
+  private clearSavedRun(): void {
+    try {
+      localStorage.removeItem(this.saveKey);
+    } catch {
+      // Ignore
+    }
+  }
+
+  private getSavedRunSummary(): string | null {
+    try {
+      const raw = localStorage.getItem(this.saveKey);
+      if (!raw) return null;
+      const d = JSON.parse(raw);
+      if (!d?.player || !d?.runConfig) return null;
+      const mins = Math.floor((d.segmentTimeSec || 0) / 60);
+      const secs = Math.floor((d.segmentTimeSec || 0) % 60);
+      const t = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      return `Lv.${d.player.level} • ${t} • P${d.runConfig.difficultyLevel}`;
+    } catch {
+      return null;
+    }
+  }
+
+  private resumeSavedRun(): void {
+    try {
+      const raw = localStorage.getItem(this.saveKey);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      const cfg: RunStartConfig = d.runConfig;
+      this.runConfig = cfg;
+      const diff = this.getDifficultyData();
+
+      this.player = new PlayerEntity();
+      this.map = new WorldMap(cfg.seed, cfg.difficultyLevel, cfg.challengeId);
+      this.evoSystem = new EvolutionSystem(diff.startCarc, cfg.difficultyLevel >= 12 ? -2 : 0);
+      this.director = new EcosystemDirector();
+
+      this.applyGeneticTrait(cfg.genetic1Id);
+      if (d.secondaryGeneticSpliced) {
+        this.applyGeneticTrait(cfg.genetic2Id);
+      }
+
+      this.evoSystem.ownedEvolutions.clear();
+      this.evoSystem.ownedSpecializations.clear();
+      this.evoSystem.bannedEvolutions = new Set(d.evo.bannedEvolutions || []);
+      this.evoSystem.carcinisationLevel = 0;
+      this.evoSystem.activeCarcinisationEffects = [];
+      this.evoSystem.freeRerolls = d.evo.freeRerolls ?? 3;
+      this.evoSystem.remainingBans = d.evo.remainingBans ?? 3;
+
+      for (const [evoId, targetLvl] of d.evo.ownedEvolutions as Array<[number, number]>) {
+        const def = this.evoSystem.allEvolutions.find(e => e.id === evoId);
+        if (!def) continue;
+        for (let l = 1; l <= targetLvl; l++) {
+          this.evoSystem.applyDraftOption(
+            { kind: 'evolution', evolution: def, targetLevel: l, isUpgrade: l > 1 },
+            this.player.stats
+          );
+        }
+      }
+      for (const [, specId] of (d.evo.ownedSpecializations || []) as Array<[number, number]>) {
+        const spec = this.evoSystem.allSpecializations.find(s => s.id === specId);
+        if (spec) {
+          this.evoSystem.applyDraftOption(
+            { kind: 'specialization', specialization: spec, targetLevel: 1, isUpgrade: true },
+            this.player.stats
+          );
+        }
+      }
+      this.evoSystem.carcinisationLevel = d.evo.carcinisationLevel ?? this.evoSystem.carcinisationLevel;
+      this.evoSystem.activeCarcinisationEffects = d.evo.activeCarcinisationEffects || [];
+      this.evoSystem.numTimesEvolved = d.evo.numTimesEvolved ?? this.evoSystem.numTimesEvolved;
+
+      Object.assign(this.player, d.player);
+      this.player.syncMaxHpAndPlating(false);
+
+      this.segmentTimeSec = d.segmentTimeSec ?? 0;
+      this.totalTimeSec = d.totalTimeSec ?? 0;
+      this.endlessLevel = d.endlessLevel ?? 0;
+      this.secondaryGeneticSpliced = !!d.secondaryGeneticSpliced;
+      this.activeWeather = d.activeWeather ?? 'None';
+      this.weatherTimer = d.weatherTimer ?? 20;
+      this.autoAttack = !!d.autoAttack;
+
+      this.director.triggeredBossTimestamps = new Set(d.director?.triggeredBossTimestamps || []);
+      this.director.bannedBossGroups = new Set(d.director?.bannedBossGroups || []);
+
+      this.map.ensureRegionsAroundPlayer(this.player.x, this.player.y);
+      const usedSet = new Set<string>(d.usedPoiIds || []);
+      for (const p of this.map.pois) {
+        if (usedSet.has(p.id)) p.used = true;
+      }
+
+      this.director.populateInitialEcosystem(this.player, this.map);
+      this.attackArcs = [];
+      this.floatingTexts = [];
+      this.particles = [];
+      this.isRunning = true;
+      this.isPausedForModal = false;
+      this.spawnFloatingText('RUN RESUMED!', this.player.x, this.player.y - 35, '#06d6a0');
+    } catch {
+      this.clearSavedRun();
+      this.openTitleWithSave();
+    }
   }
 }
