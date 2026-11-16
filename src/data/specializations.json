@@ -1,0 +1,141 @@
+[
+  {
+    "id": 1,
+    "parentEvolutionId": 180,
+    "key": "Spec_CrushingBeak",
+    "name": "Snapping Turtle Beak",
+    "rarity": "Epic",
+    "carcinisationGain": 0,
+    "description": "Armor-cracking bite that deals +55% damage and stuns targets.",
+    "damageMultiplierBonus": 0.55,
+    "statusEffect": "Stun",
+    "statBonuses": {
+      "BasePhysicalDamage": {
+        "flat": 6,
+        "pct": 0.15
+      }
+    }
+  },
+  {
+    "id": 2,
+    "parentEvolutionId": 180,
+    "key": "Spec_RaptorBeak",
+    "name": "Hooked Raptor Beak",
+    "rarity": "Epic",
+    "carcinisationGain": 0,
+    "description": "Frenzied tearing beak that reduces attack cooldown by 30% and boosts Eating Speed.",
+    "damageMultiplierBonus": 0.3,
+    "statusEffect": "Bleed",
+    "statBonuses": {
+      "EatingSpeed": {
+        "flat": 0,
+        "pct": 0.4
+      },
+      "AbilityCooldownSpeed": {
+        "flat": 0,
+        "pct": 0.25
+      }
+    }
+  },
+  {
+    "id": 10,
+    "parentEvolutionId": 170,
+    "key": "Spec_NarwhalTusk",
+    "name": "Spiral Narwhal Tusk",
+    "rarity": "Epic",
+    "carcinisationGain": 0,
+    "description": "Long-reach piercing lance that scales with Speed and Cold Resistance.",
+    "damageMultiplierBonus": 0.65,
+    "statusEffect": null,
+    "statBonuses": {
+      "MovementSpeed": {
+        "flat": 1.0,
+        "pct": 0.1
+      },
+      "ColdResistance": {
+        "flat": 0.35,
+        "pct": 0
+      }
+    }
+  },
+  {
+    "id": 19,
+    "parentEvolutionId": 173,
+    "key": "Spec_NeurotoxinBarb",
+    "name": "Cone Snail Neurotoxin",
+    "rarity": "Legendary",
+    "carcinisationGain": 1,
+    "description": "Fires twin venomous harpoons that deal +75% Poison DoT and slow targets.",
+    "damageMultiplierBonus": 0.45,
+    "statusEffect": "Poison",
+    "statBonuses": {
+      "PoisonDamagePercentage": {
+        "flat": 0,
+        "pct": 0.75
+      }
+    }
+  },
+  {
+    "id": 25,
+    "parentEvolutionId": 175,
+    "key": "Spec_CoconutCrabClaws",
+    "name": "Coconut Crab Mega-Claws",
+    "rarity": "Legendary",
+    "carcinisationGain": 2,
+    "description": "Colossal 3,300-Newton pincers that scale with both Base Damage and Plating.",
+    "damageMultiplierBonus": 0.7,
+    "statusEffect": "Stun",
+    "statBonuses": {
+      "MaxPlating": {
+        "flat": 50,
+        "pct": 0.25
+      },
+      "BasePhysicalDamage": {
+        "flat": 8,
+        "pct": 0.15
+      }
+    }
+  },
+  {
+    "id": 28,
+    "parentEvolutionId": 176,
+    "key": "Spec_OrchidMantisScythes",
+    "name": "Orchid Mantis Blades",
+    "rarity": "Epic",
+    "carcinisationGain": 0,
+    "description": "Camouflaged twin blades with +18% Dodge Chance and rapid double slashes.",
+    "damageMultiplierBonus": 0.5,
+    "statusEffect": "Bleed",
+    "statBonuses": {
+      "DodgeChance": {
+        "flat": 0.18,
+        "pct": 0
+      },
+      "MovementSpeed": {
+        "flat": 0.8,
+        "pct": 0
+      }
+    }
+  },
+  {
+    "id": 34,
+    "parentEvolutionId": 182,
+    "key": "Spec_GlyptodonMace",
+    "name": "Spiked Glyptodon Tail",
+    "rarity": "Epic",
+    "carcinisationGain": 0,
+    "description": "Massive seismic tail slam that scales with Max HP and generates Plating.",
+    "damageMultiplierBonus": 0.4,
+    "statusEffect": "Stun",
+    "statBonuses": {
+      "MaxHp": {
+        "flat": 75,
+        "pct": 0.15
+      },
+      "DamageReduction": {
+        "flat": 3,
+        "pct": 0
+      }
+    }
+  }
+]

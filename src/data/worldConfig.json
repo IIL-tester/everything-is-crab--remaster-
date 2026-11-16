@@ -1,0 +1,348 @@
+{
+  "worldConsts": {
+    "MAX_PLAYER_EVOLUTION_LEVEL": 99,
+    "MAX_CARCINISATION_LEVEL": 10,
+    "MAX_NUM_MINUTES": 16,
+    "MAX_TIME_ALLOWED_IN_SECONDS": 960,
+    "MAX_POSSIBLE_EVOLUTION_UPGRADE_LEVEL": 5,
+    "MAX_ALLOWED_ENEMIES_ON_MAP_HARDCAP": 60,
+    "MAX_ALLOWED_FOOD_ON_MAP": 200,
+    "TIME_BETWEEN_AUTO_REPOPULATIONS_OF_ACTIVE_REGIONS": 10.0,
+    "MIN_POSSIBLE_MOVE_SPEED": 0.2,
+    "MAX_POSSIBLE_MOVE_SPEED": 40.0
+  },
+  "dayNight": {
+    "dayDuration": 125,
+    "nightDuration": 85,
+    "transitionDuration": 15
+  },
+  "terrains": {
+    "Grass": {
+      "id": 1,
+      "movementPenalty": 0.0,
+      "tempChangeDay": 0,
+      "tempChangeNight": 0,
+      "color": "#2d5a27"
+    },
+    "Sand": {
+      "id": 2,
+      "movementPenalty": 0.125,
+      "tempChangeDay": 1,
+      "tempChangeNight": 0,
+      "color": "#c29b53"
+    },
+    "Water": {
+      "id": 3,
+      "movementPenalty": 0.75,
+      "tempChangeDay": 0,
+      "tempChangeNight": 0,
+      "color": "#1a5276"
+    },
+    "Snow": {
+      "id": 4,
+      "movementPenalty": 0.2,
+      "tempChangeDay": -1,
+      "tempChangeNight": -1.2,
+      "color": "#cbd5e1"
+    }
+  },
+  "temperatureRegulator": {
+    "freezingBuildupInterval": 2.0,
+    "freezingBuildupAmount": 0.25,
+    "freezingDecayInterval": 2.0,
+    "freezingDecayAmount": 0.15,
+    "freezingDamageInterval": 2.0,
+    "freezingDamage": 5.0,
+    "heatwaveBuildupInterval": 2.0,
+    "heatwaveBuildupAmount": 0.2,
+    "heatwaveDecayInterval": 2.0,
+    "heatwaveDecayAmount": 0.15,
+    "heatwaveDamageInterval": 2.0,
+    "heatwaveDamage": 5.0,
+    "soakBuildupInterval": 2.0,
+    "soakBuildupAmount": 0.1,
+    "soakDecayInterval": 1.0,
+    "soakDecayAmount": 0.2,
+    "maxSoakCooldownMultiplier": 1.75
+  },
+  "bossEventsStandard": [
+    {
+      "timeSeconds": 240,
+      "label": "4:00 Early Boss",
+      "timeout": 90,
+      "pool": [
+        1000,
+        1050,
+        1060
+      ],
+      "isFinal": false
+    },
+    {
+      "timeSeconds": 480,
+      "label": "8:00 Mid Boss",
+      "timeout": 90,
+      "pool": [
+        1001,
+        1020,
+        1051,
+        1061,
+        1040
+      ],
+      "isFinal": false
+    },
+    {
+      "timeSeconds": 720,
+      "label": "12:00 Late Boss",
+      "timeout": 90,
+      "pool": [
+        1021,
+        1041,
+        1052,
+        1062,
+        1002
+      ],
+      "isFinal": false
+    },
+    {
+      "timeSeconds": 960,
+      "label": "16:00 Final Boss: The Krabken",
+      "timeout": 120,
+      "pool": [
+        1180
+      ],
+      "isFinal": true
+    }
+  ],
+  "difficulties": [
+    {
+      "level": 0,
+      "name": "D0: Exploration Mode",
+      "mutagenMult": 0.5,
+      "startCarc": 0,
+      "enrageMult": 1.0,
+      "envDmgMult": 1.0,
+      "healEff": 1.0,
+      "enemyHpMult": 0.65,
+      "enemyDmgMult": 0.5,
+      "bossHpMult": 0.65,
+      "bossDmgMult": 0.5,
+      "dualBosses": false
+    },
+    {
+      "level": 1,
+      "name": "D1: Selective Pressure 1 (Standard)",
+      "mutagenMult": 1.0,
+      "startCarc": 0,
+      "enrageMult": 1.0,
+      "envDmgMult": 1.0,
+      "healEff": 1.0,
+      "enemyHpMult": 0.85,
+      "enemyDmgMult": 0.85,
+      "bossHpMult": 0.85,
+      "bossDmgMult": 0.85,
+      "dualBosses": false
+    },
+    {
+      "level": 3,
+      "name": "D3: Selective Pressure 3",
+      "mutagenMult": 1.2,
+      "startCarc": 1,
+      "enrageMult": 1.0,
+      "envDmgMult": 1.0,
+      "healEff": 1.0,
+      "enemyHpMult": 1.0,
+      "enemyDmgMult": 1.0,
+      "bossHpMult": 1.0,
+      "bossDmgMult": 1.0,
+      "dualBosses": false
+    },
+    {
+      "level": 5,
+      "name": "D5: Selective Pressure 5 (Harsh)",
+      "mutagenMult": 1.4,
+      "startCarc": 2,
+      "enrageMult": 1.0,
+      "envDmgMult": 2.0,
+      "healEff": 1.0,
+      "enemyHpMult": 1.0,
+      "enemyDmgMult": 1.0,
+      "bossHpMult": 1.0,
+      "bossDmgMult": 1.0,
+      "dualBosses": false
+    },
+    {
+      "level": 9,
+      "name": "D9: Selective Pressure 9 (Carcinised)",
+      "mutagenMult": 1.8,
+      "startCarc": 4,
+      "enrageMult": 0.8,
+      "envDmgMult": 2.0,
+      "healEff": 0.75,
+      "enemyHpMult": 1.2,
+      "enemyDmgMult": 1.15,
+      "bossHpMult": 1.25,
+      "bossDmgMult": 1.15,
+      "dualBosses": false
+    },
+    {
+      "level": 15,
+      "name": "D15: Selective Pressure 15 (Brutal)",
+      "mutagenMult": 2.2,
+      "startCarc": 6,
+      "enrageMult": 0.6,
+      "envDmgMult": 2.0,
+      "healEff": 0.75,
+      "enemyHpMult": 1.45,
+      "enemyDmgMult": 1.35,
+      "bossHpMult": 1.5,
+      "bossDmgMult": 1.35,
+      "dualBosses": false
+    },
+    {
+      "level": 20,
+      "name": "D20: Selective Pressure 20 (Apex Extinction)",
+      "mutagenMult": 2.5,
+      "startCarc": 7,
+      "enrageMult": 0.6,
+      "envDmgMult": 2.0,
+      "healEff": 0.5,
+      "enemyHpMult": 1.8,
+      "enemyDmgMult": 1.65,
+      "bossHpMult": 1.8,
+      "bossDmgMult": 1.65,
+      "dualBosses": true
+    }
+  ],
+  "genetics": [
+    {
+      "id": 1,
+      "name": "Balanced Genome",
+      "description": "+10% Max HP, +10% Base Damage, +1 Free Reroll",
+      "bonuses": {
+        "MaxHpPct": 0.1,
+        "DamagePct": 0.1,
+        "Rerolls": 1
+      }
+    },
+    {
+      "id": 2,
+      "name": "Predator Lineage",
+      "description": "+25% Base Physical Damage, +1.2 Starting Apex Score",
+      "bonuses": {
+        "DamagePct": 0.25,
+        "ApexFlat": 1.2
+      }
+    },
+    {
+      "id": 3,
+      "name": "Armored Carapace",
+      "description": "+35 Starting Max Plating, +3 Damage Reduction",
+      "bonuses": {
+        "PlatingFlat": 35,
+        "DamageReductionFlat": 3
+      }
+    },
+    {
+      "id": 4,
+      "name": "Hyper-Metabolism",
+      "description": "+35% XP / Calorie Efficiency, +1.0 Movement Speed",
+      "bonuses": {
+        "XpPct": 0.35,
+        "SpeedFlat": 1.0
+      }
+    },
+    {
+      "id": 5,
+      "name": "True Carcinisation",
+      "description": "Starts with Crab Claws L1, +2 Carcinisation, +20% Cooldown Speed",
+      "bonuses": {
+        "StartCarc": 2,
+        "CooldownPct": 0.2,
+        "StartCrabClaws": 1
+      }
+    }
+  ],
+  "challenges": [
+    {
+      "id": 0,
+      "name": "Standard Run (No Challenge)",
+      "description": "Full 16-minute ecosystem survival run with bosses at 4:00, 8:00, 12:00, and 16:00."
+    },
+    {
+      "id": 1024,
+      "name": "Boss Rush (7m Gauntlet)",
+      "description": "33% less XP needed per level, 2.66x time progression, and bosses spawn every 60 seconds!"
+    },
+    {
+      "id": 1,
+      "name": "Dry Age",
+      "description": "The world has dried into scorching Sand deserts with frequent Heatwaves."
+    },
+    {
+      "id": 2,
+      "name": "Ice Age",
+      "description": "The world is locked in Snow and Ice with frequent Snowstorms."
+    },
+    {
+      "id": 512,
+      "name": "Frenzy",
+      "description": "+34% faster ability cooldowns for both you and all creatures; enemies have +35% HP & +25% Speed."
+    },
+    {
+      "id": 64,
+      "name": "Wounded",
+      "description": "Passive HP regeneration and healing ponds are disabled; rely on Plating and Dodge!"
+    }
+  ],
+  "pois": [
+    {
+      "id": 0,
+      "type": "GrowingTree",
+      "name": "Growing Tree",
+      "biome": [
+        "Grass",
+        "Snow"
+      ],
+      "description": "Ancient mutagenic tree that drops high-rarity Boss/Legendary fruit and triggers a forced evolution."
+    },
+    {
+      "id": 1,
+      "type": "HealingPond",
+      "name": "Thermal Healing Pond",
+      "biome": [
+        "Grass",
+        "Snow"
+      ],
+      "description": "Restores 40% Max HP and clears Heat/Cold buildup."
+    },
+    {
+      "id": 3,
+      "type": "ChaosTree",
+      "name": "Chaos Tree",
+      "biome": [
+        "Sand",
+        "Grass",
+        "Snow"
+      ],
+      "description": "Grants a random chaotic evolution upgrade and +1 Reroll."
+    },
+    {
+      "id": 6,
+      "type": "Oasis",
+      "name": "Desert Oasis",
+      "biome": [
+        "Sand"
+      ],
+      "description": "Provides cooling shade in Sand biomes and spawns rich cluster food."
+    },
+    {
+      "id": 8,
+      "type": "AlgaeReef",
+      "name": "Bioluminescent Algae Reef",
+      "biome": [
+        "Water"
+      ],
+      "description": "Rich marine feeding ground that grants bonus XP calories and Plating."
+    }
+  ]
+}
