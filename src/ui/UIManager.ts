@@ -19,6 +19,12 @@ export class UIManager {
   private hudContainer!: HTMLElement;
   private modalContainer!: HTMLElement;
 
+  private assetUrl(path?: string): string {
+    if (!path) return '';
+    const base = (window as unknown as { CRAB_ASSET_BASE?: string }).CRAB_ASSET_BASE || '';
+    return base ? base + path.replace(/^\.\//, '') : path;
+  }
+
   constructor(root: HTMLElement) {
     this.root = root;
     this.initDOM();
@@ -68,12 +74,12 @@ export class UIManager {
     this.modalContainer.innerHTML = `
       <div class="modal-box">
         <div style="display:flex; align-items:center; justify-content:center; gap:18px; margin-bottom:8px;">
-          <img src="${ASSET_MANIFEST.player.body}" alt="Darwin" style="width:48px; height:48px; object-fit:contain;" />
+          <img src="${this.assetUrl(ASSET_MANIFEST.player.body)}" alt="Darwin" style="width:48px; height:48px; object-fit:contain;" />
           <div>
             <div class="modal-title" style="margin-bottom:2px;">EVERYTHING IS CRAB</div>
             <div class="modal-subtitle" style="margin-bottom:0;">The Animal Evolution Roguelite</div>
           </div>
-          <img src="${ASSET_MANIFEST.creatures[1180]}" alt="Krabken" style="width:56px; height:56px; object-fit:contain;" />
+          <img src="${this.assetUrl(ASSET_MANIFEST.creatures[1180])}" alt="Krabken" style="width:56px; height:56px; object-fit:contain;" />
         </div>
         <div style="height:2px; background:#2f2623; margin:12px 0 16px 0;"></div>
         <div class="form-grid">
@@ -161,7 +167,7 @@ export class UIManager {
 
           const e = opt.evolution!;
           const lvlDef = e.levels[opt.targetLevel - 1] || e.levels[0];
-          const iconPath = ASSET_MANIFEST.evolutionIcons[e.id] || ASSET_MANIFEST.evolutionParts[e.id];
+          const iconPath = this.assetUrl(ASSET_MANIFEST.evolutionIcons[e.id] || ASSET_MANIFEST.evolutionParts[e.id]);
           const fact = EVOLUTION_FACTS[e.id] || '';
           const bonusSummary = Object.entries(lvlDef.statBonuses)
             .map(([k, v]) => {
@@ -476,7 +482,7 @@ export class UIManager {
       const lvlDef = def.levels[lvl - 1] || def.levels[0];
       const remCd = evoSystem.abilityCooldownTimers.get(evoId) ?? 0;
       const cdPct = lvlDef.cooldown > 0 ? Math.min(100, (remCd / lvlDef.cooldown) * 100) : 0;
-      const iconPath = ASSET_MANIFEST.evolutionIcons[evoId] || ASSET_MANIFEST.evolutionParts[evoId];
+      const iconPath = this.assetUrl(ASSET_MANIFEST.evolutionIcons[evoId] || ASSET_MANIFEST.evolutionParts[evoId]);
 
       let keyTag = '';
       if (def.category === 'Dash') keyTag = 'SPC';

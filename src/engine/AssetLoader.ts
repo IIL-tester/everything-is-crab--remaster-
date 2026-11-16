@@ -19,10 +19,13 @@ export class AssetLoader {
     this.totalCount = paths.size;
     this.loadedCount = 0;
 
+    const base = (window as unknown as { CRAB_ASSET_BASE?: string }).CRAB_ASSET_BASE || '';
+
     const tasks = Array.from(paths).map(
       path =>
         new Promise<void>(resolve => {
           const img = new Image();
+          img.crossOrigin = 'anonymous';
           img.onload = () => {
             this.images.set(path, img);
             this.loadedCount++;
@@ -32,7 +35,7 @@ export class AssetLoader {
             this.loadedCount++;
             resolve();
           };
-          img.src = path;
+          img.src = base ? base + path.replace(/^\.\//, '') : path;
         })
     );
 
